@@ -24,6 +24,7 @@ namespace CefSharp.Example
         public const string BasicSchemeTestUrl = "custom://cefsharp/SchemeTest.html";
         public const string ResponseFilterTestUrl = "custom://cefsharp/ResponseFilterTest.html";
         public const string DraggableRegionTestUrl = "custom://cefsharp/DraggableRegionTest.html";
+        public const string MultitenantTestUrl = "custom://cefsharp/MultitenantTest.html";
         public const string TestResourceUrl = "http://test/resource/load";
         public const string RenderProcessCrashedUrl = "http://processcrashed";
         public const string TestUnicodeResourceUrl = "http://test/resource/loadUnicode";
@@ -51,7 +52,7 @@ namespace CefSharp.Example
             settings.CachePath = "cache";
             //settings.UserAgent = "CefSharp Browser" + Cef.CefSharpVersion; // Example User Agent
             //settings.CefCommandLineArgs.Add("renderer-process-limit", "1");
-            //settings.CefCommandLineArgs.Add("renderer-startup-dialog", "1");
+            settings.CefCommandLineArgs.Add("renderer-startup-dialog", "1");
             //settings.CefCommandLineArgs.Add("enable-media-stream", "1"); //Enable WebRTC
             //settings.CefCommandLineArgs.Add("no-proxy-server", "1"); //Don't use a proxy server, always make direct connections. Overrides any other proxy server flags that are passed.
             //settings.CefCommandLineArgs.Add("debug-plugin-loading", "1"); //Dumps extra logging about plugin loading to the log file.

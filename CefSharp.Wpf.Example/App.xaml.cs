@@ -19,6 +19,7 @@ namespace CefSharp.Wpf.Example
             }
 #endif
 
+            CefSharpSettings.SeparateBoundObjects = true;
             CefExample.Init(true, multiThreadedMessageLoop: true);
 
             base.OnStartup(e);
