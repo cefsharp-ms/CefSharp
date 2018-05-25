@@ -6,6 +6,8 @@
 
 #include "ManagedCefBrowserAdapter.h"
 #include "Internals/Messaging/Messages.h"
+#include "Internals/Serialization/Primitives.h"
+#include "Internals/Serialization/JsObjectsSerialization.h"
 #include "Internals/CefFrameWrapper.h"
 #include "Internals/CefSharpBrowserWrapper.h"
 
@@ -29,7 +31,7 @@ void ManagedCefBrowserAdapter::CreateOffscreenBrowser(IntPtr windowHandle, Brows
     CefString addressNative = StringUtils::ToNative(address);
 
     if (!CefBrowserHost::CreateBrowser(window, _clientAdapter.get(), addressNative,
-        *browserSettings->_browserSettings, static_cast<CefRefPtr<CefRequestContext>>(requestContext)))
+        *browserSettings->_browserSettings, CreateExtraInfo(), static_cast<CefRefPtr<CefRequestContext>>(requestContext)))
     {
         throw gcnew InvalidOperationException("Failed to create offscreen browser. Call Cef.Initialize() first.");
     }
@@ -80,7 +82,7 @@ void ManagedCefBrowserAdapter::CreateBrowser(BrowserSettings^ browserSettings, R
     CefString addressNative = StringUtils::ToNative(address);
 
     CefBrowserHost::CreateBrowser(window, _clientAdapter.get(), addressNative,
-        *browserSettings->_browserSettings, static_cast<CefRefPtr<CefRequestContext>>(requestContext));
+        *browserSettings->_browserSettings, CreateExtraInfo(), static_cast<CefRefPtr<CefRequestContext>>(requestContext));
 }
 
 void ManagedCefBrowserAdapter::Resize(int width, int height)
@@ -128,6 +130,20 @@ void ManagedCefBrowserAdapter::MethodInvocationComplete(Object^ sender, MethodIn
     {
         _clientAdapter->MethodInvocationComplete(result);
     }
+}
+
+CefRefPtr<CefDictionaryValue> CefSharp::ManagedCefBrowserAdapter::CreateExtraInfo()
+{
+    auto extra_info = CefDictionaryValue::Create();
+    auto objectRepository = this->_javaScriptObjectRepository;
+    if (objectRepository->HasBoundObjects && CefSharpSettings::LegacyJavascriptBindingEnabled)
+    {
+        auto bindings = CefListValue::Create();
+        SerializeJsObjects(objectRepository->GetObjects(nullptr), bindings, 0);
+        extra_info->SetList("bindings", bindings);
+    }
+   
+    return extra_info;
 }
 
 MCefRefPtr<ClientAdapter> ManagedCefBrowserAdapter::GetClientAdapter()

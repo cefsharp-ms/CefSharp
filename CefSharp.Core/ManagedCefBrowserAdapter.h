@@ -39,6 +39,8 @@ namespace CefSharp
     internal:
         MCefRefPtr<ClientAdapter> GetClientAdapter();
 
+        CefRefPtr<CefDictionaryValue> CreateExtraInfo();
+
     public:
         ManagedCefBrowserAdapter(IWebBrowserInternal^ webBrowserInternal, bool offScreenRendering)
             : _isDisposed(false)
