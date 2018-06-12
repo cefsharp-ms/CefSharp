@@ -29,6 +29,8 @@ namespace CefSharp
         bool _focusedNodeChangedEnabled;
         bool _legacyBindingEnabled;
 
+        gcroot<List<JavascriptObject^>^> _workerJavascriptObjects;
+
         // The serialized registered object data waiting to be used.
         gcroot<Dictionary<String^, JavascriptObject^>^> _javascriptObjects;
 
@@ -80,6 +82,8 @@ namespace CefSharp
         virtual DECL void OnWebKitInitialized() OVERRIDE;
         virtual DECL void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE;
         virtual DECL void OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefDOMNode> node) OVERRIDE;
+        virtual DECL void OnWorkerContextCreated(int worker_id, const CefString& url, CefRefPtr<CefV8Context> context) OVERRIDE;
+        virtual DECL void OnWorkerContextReleased(int worker_id, CefRefPtr<CefV8Context> context) OVERRIDE;
 
         IMPLEMENT_REFCOUNTING(CefAppUnmanagedWrapper);
     };

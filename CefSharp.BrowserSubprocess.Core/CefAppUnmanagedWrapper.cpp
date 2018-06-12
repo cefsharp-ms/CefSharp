@@ -51,6 +51,12 @@ namespace CefSharp
             jsObjects = DeserializeJsObjects(list, 0);
         }
 
+        if (extra_info.get() != nullptr && extra_info->HasKey("workerbindings") && static_cast<List<JavascriptObject^>^>(_workerJavascriptObjects) == nullptr)
+        {
+            auto list = extra_info->GetList("workerbindings");
+            _workerJavascriptObjects = DeserializeJsObjects(list, 0);
+        }
+
         auto wrapper = gcnew CefBrowserWrapper(browser, jsObjects);
         _onBrowserCreated->Invoke(wrapper);
 
@@ -67,6 +73,16 @@ namespace CefSharp
             delete wrapper;
         }
     };
+
+    void CefAppUnmanagedWrapper::OnWorkerContextCreated(int worker_id, const CefString& url, CefRefPtr<CefV8Context> context)
+    {
+        
+    }
+
+    void CefAppUnmanagedWrapper::OnWorkerContextReleased(int worker_id, CefRefPtr<CefV8Context> context)
+    {
+       
+    }
 
     void CefAppUnmanagedWrapper::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
     {
