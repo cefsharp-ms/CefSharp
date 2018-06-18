@@ -49,7 +49,7 @@ namespace CefSharp
         /// </remarks>
         public static bool LegacyJavascriptBindingEnabled { get; set; }
 
-        public static IJavascriptObjectRepository JavascriptObjectRepository { get; }
+        public static JavascriptObjectRepository JavascriptObjectRepository { get; }
 
         /// <summary>
         /// WCF is used by RegisterJsObject feature for Javascript Binding

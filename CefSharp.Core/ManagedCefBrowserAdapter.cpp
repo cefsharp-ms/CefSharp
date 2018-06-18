@@ -142,13 +142,6 @@ CefRefPtr<CefDictionaryValue> CefSharp::ManagedCefBrowserAdapter::CreateExtraInf
         SerializeJsObjects(objectRepository->GetObjects(nullptr), bindings, 0);
         extra_info->SetList("bindings", bindings);
     }
-
-    //if (CefSharpSettings::JavascriptObjectRepository->HasBoundObjects && CefSharpSettings::LegacyJavascriptBindingEnabled)
-    //{
-    //    auto workerBindings = CefListValue::Create();
-    //    SerializeJsObjects(CefSharpSettings::JavascriptObjectRepository->GetObjects(nullptr), workerBindings, 0);
-    //    extra_info->SetList("workerbindings", workerBindings);
-    //}
    
     return extra_info;
 }

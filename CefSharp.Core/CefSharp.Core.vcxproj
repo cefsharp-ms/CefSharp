@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\cef.sdk.3.3239.1726\build\cef.sdk.props" Condition="Exists('..\packages\cef.sdk.3.3239.1726\build\cef.sdk.props')" />
+  <Import Project="..\packages\cef.sdk.3.3239.1727\build\cef.sdk.props" Condition="Exists('..\packages\cef.sdk.3.3239.1727\build\cef.sdk.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -221,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="Internals\CefSharpApp.cpp" />
     <ClCompile Include="CookieManager.cpp" />
     <ClCompile Include="Internals\CefBrowserHostWrapper.cpp" />
     <ClCompile Include="Internals\CefContextMenuParamsWrapper.cpp" />
@@ -233,6 +234,7 @@
     <ClCompile Include="Internals\JavascriptCallbackFactory.cpp" />
     <ClCompile Include="Internals\Serialization\ObjectsSerialization.cpp" />
     <ClCompile Include="Internals\StringVisitor.cpp" />
+    <ClCompile Include="Internals\WorkerBindingManager.cpp" />
     <ClCompile Include="ManagedCefBrowserAdapter.cpp" />
     <ClCompile Include="NativeMethodWrapper.cpp" />
     <ClCompile Include="Internals\Serialization\V8Serialization.cpp" />
@@ -279,6 +281,7 @@
     <ClInclude Include="Internals\CefTaskScheduler.h" />
     <ClInclude Include="Internals\CefTaskWrapper.h" />
     <ClInclude Include="Internals\CefWrapper.h" />
+    <ClInclude Include="Internals\WorkerBindingManager.h" />
     <ClInclude Include="PopupFeatures.h" />
     <ClInclude Include="RequestContextHandler.h" />
     <ClInclude Include="resource.h" />
@@ -336,6 +339,6 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\cef.sdk.3.3239.1726\build\cef.sdk.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.sdk.3.3239.1726\build\cef.sdk.props'))" />
+    <Error Condition="!Exists('..\packages\cef.sdk.3.3239.1727\build\cef.sdk.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.sdk.3.3239.1727\build\cef.sdk.props'))" />
   </Target>
 </Project>

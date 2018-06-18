@@ -29,6 +29,7 @@ namespace CefSharp
         bool _focusedNodeChangedEnabled;
         bool _legacyBindingEnabled;
 
+        gcroot<ConcurrentDictionary<int, JavascriptRootObjectWrapper^>^> _workerJavascriptRootWrappers;
         gcroot<List<JavascriptObject^>^> _workerJavascriptObjects;
 
         // The serialized registered object data waiting to be used.
@@ -50,6 +51,7 @@ namespace CefSharp
             _javascriptObjects = gcnew Dictionary<String^, JavascriptObject^>();
             _registerBoundObjectRegistry = gcnew RegisterBoundObjectRegistry();
             _legacyBindingEnabled = false;
+            _workerJavascriptRootWrappers = gcnew ConcurrentDictionary<int, JavascriptRootObjectWrapper^>();
         }
 
         ~CefAppUnmanagedWrapper()
@@ -84,6 +86,8 @@ namespace CefSharp
         virtual DECL void OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefDOMNode> node) OVERRIDE;
         virtual DECL void OnWorkerContextCreated(int worker_id, const CefString& url, CefRefPtr<CefV8Context> context) OVERRIDE;
         virtual DECL void OnWorkerContextReleased(int worker_id, CefRefPtr<CefV8Context> context) OVERRIDE;
+        virtual DECL bool OnWorkerProcessMessageReceived(CefRefPtr<CefWorkerContext> worker_context, CefRefPtr<CefProcessMessage> message) OVERRIDE;
+        virtual DECL bool AllowExtensionForWorker(const CefString& script_url, const CefString& extension_name) OVERRIDE;
 
         IMPLEMENT_REFCOUNTING(CefAppUnmanagedWrapper);
     };
