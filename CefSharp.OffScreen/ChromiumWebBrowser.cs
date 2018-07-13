@@ -84,6 +84,7 @@ namespace CefSharp.OffScreen
         /// <remarks>In the WPF control, this property is implemented as a Dependency Property and fully supports data
         /// binding.</remarks>
         public string Address { get; private set; }
+        public string Affinity { get; }
         /// <summary>
         /// A flag that indicates whether the state of the control current supports the GoBack action (true) or not (false).
         /// </summary>
@@ -322,9 +323,10 @@ namespace CefSharp.OffScreen
         /// <param name="browserSettings">The browser settings to use. If null, the default settings are used.</param>
         /// <param name="requestContext">See <see cref="RequestContext" /> for more details. Defaults to null</param>
         /// <param name="automaticallyCreateBrowser">automatically create the underlying Browser</param>
+        /// <param name="affinity"></param>
         /// <exception cref="System.InvalidOperationException">Cef::Initialize() failed</exception>
         public ChromiumWebBrowser(string address = "", BrowserSettings browserSettings = null,
-            RequestContext requestContext = null, bool automaticallyCreateBrowser = true)
+            RequestContext requestContext = null, bool automaticallyCreateBrowser = true, string affinity = "")
         {
             if (!Cef.IsInitialized && !Cef.Initialize())
             {
@@ -336,6 +338,7 @@ namespace CefSharp.OffScreen
             ResourceHandlerFactory = new DefaultResourceHandlerFactory();
             BrowserSettings = browserSettings ?? new BrowserSettings();
             RequestContext = requestContext;
+            Affinity = affinity;
 
             Cef.AddDisposable(this);
             Address = address;
@@ -450,7 +453,7 @@ namespace CefSharp.OffScreen
 
             browserCreated = true;
 
-            managedCefBrowserAdapter.CreateOffscreenBrowser(windowHandle, BrowserSettings, (RequestContext)RequestContext, Address);
+            managedCefBrowserAdapter.CreateOffscreenBrowser(windowHandle, BrowserSettings, (RequestContext)RequestContext, Address, Affinity);
         }
 
         /// <summary>

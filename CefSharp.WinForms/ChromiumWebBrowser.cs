@@ -63,6 +63,8 @@ namespace CefSharp.WinForms
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DefaultValue(false)]
         public bool IsActivating { get; set; }
 
+        public string Affinity { get; }
+
         /// <summary>
         /// Gets or sets the browser settings.
         /// </summary>
@@ -358,11 +360,12 @@ namespace CefSharp.WinForms
         /// <param name="address">The address.</param>
         /// <param name="requestContext">Request context that will be used for this browser instance,
         /// if null the Global Request Context will be used</param>
-        public ChromiumWebBrowser(string address, IRequestContext requestContext = null)
+        public ChromiumWebBrowser(string address, IRequestContext requestContext = null, string affinity = "")
         {
             Dock = DockStyle.Fill;
             Address = address;
             RequestContext = requestContext;
+            Affinity = affinity;
 
             InitializeFieldsAndCefIfRequired();
         }
@@ -613,7 +616,7 @@ namespace CefSharp.WinForms
                 if(IsBrowserInitialized == false || browser == null)
                 { 
                     //TODO: Revert temp workaround for default url not loading
-                    managedCefBrowserAdapter.CreateBrowser(BrowserSettings, (RequestContext)RequestContext, Handle, null);
+                    managedCefBrowserAdapter.CreateBrowser(BrowserSettings, (RequestContext)RequestContext, Handle, null, Affinity);
                 }
                 else
                 {
