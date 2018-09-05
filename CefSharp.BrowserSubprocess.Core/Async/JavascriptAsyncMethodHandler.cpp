@@ -28,13 +28,21 @@ namespace CefSharp
                 {
                     try 
                     {
-                        auto promiseData = _promiseCreator->ExecuteFunctionWithContext(context, nullptr, CefV8ValueList());
-                        retval = promiseData->GetValue("p");
+                        int64 callbackId = -1;
+                        if (this->_fireAndForget == true)
+                        {
+                            retval = CefV8Value::CreateUndefined();
+                        }
+                        else
+                        {
+                            auto promiseData = _promiseCreator->ExecuteFunctionWithContext(context, nullptr, CefV8ValueList());
+                            retval = promiseData->GetValue("p");
 
-                        auto resolve = promiseData->GetValue("res");
-                        auto reject = promiseData->GetValue("rej");
-                        auto callback = gcnew JavascriptAsyncMethodCallback(context, resolve, reject);
-                        auto callbackId = _methodCallbackSave->Invoke(callback);
+                            auto resolve = promiseData->GetValue("res");
+                            auto reject = promiseData->GetValue("rej");
+                            auto callback = gcnew JavascriptAsyncMethodCallback(context, resolve, reject);
+                            callbackId = _methodCallbackSave->Invoke(callback);
+                        }
 
                         auto request = CefProcessMessage::Create(kJavascriptAsyncMethodCallRequest);
                         auto argList = request->GetArgumentList();

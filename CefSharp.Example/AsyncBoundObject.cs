@@ -32,6 +32,12 @@ namespace CefSharp.Example
             return "Hello " + name;
         }
 
+        [JavascriptBinding(true)]
+        public void HelloNoResult()
+        {
+
+        }
+
         public string DoSomething()
         {
             Thread.Sleep(1000);

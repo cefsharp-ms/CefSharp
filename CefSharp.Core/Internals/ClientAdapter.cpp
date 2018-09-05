@@ -1267,6 +1267,7 @@ namespace CefSharp
                 auto callbackId = GetInt64(argList, 2);
                 auto methodName = StringUtils::ToClr(argList->GetString(3));
                 auto arguments = argList->GetList(4);
+                auto fireAndForget = argList->GetBool(5);
                 auto methodInvocation = gcnew MethodInvocation(browser->GetIdentifier(), frameId, objectId, methodName, (callbackId > 0 ? Nullable<int64>(callbackId) : Nullable<int64>()));
                 for (auto i = 0; i < static_cast<int>(arguments->GetSize()); i++)
                 {

@@ -34,6 +34,8 @@ namespace CefSharp.Internals
         [DataMember]
         public string JavascriptName { get; set; }
 
+        public bool FireAndForget { get; set; }
+
         /// <summary>
         /// Params this method expects
         /// </summary>

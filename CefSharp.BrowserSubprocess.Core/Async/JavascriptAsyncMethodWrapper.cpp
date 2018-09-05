@@ -14,6 +14,11 @@ namespace CefSharp
         {
             void JavascriptAsyncMethodWrapper::Bind(JavascriptMethod^ method, const CefRefPtr<CefV8Value>& value)
             {
+                if (method->FireAndForget)
+                {
+                    _javascriptMethodHandler->SetFireAndForget();
+                }
+
                 auto methodName = StringUtils::ToNative(method->JavascriptName);
                 auto v8Function = CefV8Value::CreateFunction(methodName, _javascriptMethodHandler.get());
 

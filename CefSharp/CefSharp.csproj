@@ -107,6 +107,7 @@
     <Compile Include="Internals\FileResourceHandler.cs" />
     <Compile Include="CefExtension.cs" />
     <Compile Include="CefLibraryHandle.cs" />
+    <Compile Include="JavascriptBindingAttribute.cs" />
     <Compile Include="Structs\CompositionUnderline.cs" />
     <Compile Include="DomNode.cs" />
     <Compile Include="Structs\DraggableRegion.cs" />

@@ -21,12 +21,18 @@ namespace CefSharp
                 gcroot<Func<JavascriptAsyncMethodCallback^, int64>^> _methodCallbackSave;
                 CefRefPtr<CefV8Value> _promiseCreator;
                 int64 _objectId;
+                bool _fireAndForget;
 
             public:
                 JavascriptAsyncMethodHandler(int64 objectId, JavascriptCallbackRegistry^ callbackRegistry, CefRefPtr<CefV8Value> promiseCreator, Func<JavascriptAsyncMethodCallback^, int64>^ methodCallbackSave)
                     :_callbackRegistry(callbackRegistry), _objectId(objectId), _promiseCreator(promiseCreator), _methodCallbackSave(methodCallbackSave)
                 {
 
+                }
+
+                void SetFireAndForget()
+                {
+                    _fireAndForget = true;
                 }
 
                 virtual bool Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception);

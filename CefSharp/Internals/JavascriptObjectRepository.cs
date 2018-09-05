@@ -442,6 +442,7 @@ namespace CefSharp.Internals
 
             jsMethod.ManagedName = methodInfo.Name;
             jsMethod.JavascriptName = GetJavascriptName(methodInfo.Name, camelCaseJavascriptNames);
+            jsMethod.FireAndForget = methodInfo.GetCustomAttribute<JavascriptBindingAttribute>()?.FireAndForget == true;
             jsMethod.Function = methodInfo.Invoke;
             jsMethod.ParameterCount = methodInfo.GetParameters().Length;
             jsMethod.Parameters = methodInfo.GetParameters()
