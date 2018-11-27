@@ -46,6 +46,8 @@ namespace CefSharp.Internals
         /// </summary>
         public int ParameterCount { get; set; }
 
+        public bool FireAndForget { get; set; }
+
         public override string ToString()
         {
             return ManagedName ?? base.ToString();

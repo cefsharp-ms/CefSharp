@@ -114,6 +114,7 @@
     <Compile Include="CefExtension.cs" />
     <Compile Include="CefLibraryHandle.cs" />
     <Compile Include="Internals\IRenderWebBrowser.cs" />
+    <Compile Include="JavascriptBindingAttribute.cs" />
     <Compile Include="JavascriptException.cs" />
     <Compile Include="JavascriptBindingExtensions.cs" />
     <Compile Include="JavascriptStackFrame.cs" />

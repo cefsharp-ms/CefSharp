@@ -118,15 +118,20 @@ namespace CefSharp.Internals
                 exception = e.Message;
             }
 
-            return new MethodInvocationResult
+            if (!methodInvocation.FireAndForget)
             {
-                BrowserId = methodInvocation.BrowserId,
-                CallbackId = methodInvocation.CallbackId,
-                FrameId = methodInvocation.FrameId,
-                Message = exception,
-                Result = result,
-                Success = success
-            };
+                return new MethodInvocationResult
+                {
+                    BrowserId = methodInvocation.BrowserId,
+                    CallbackId = methodInvocation.CallbackId,
+                    FrameId = methodInvocation.FrameId,
+                    Message = exception,
+                    Result = result,
+                    Success = success
+                };
+            }
+
+            return null;
         }
 
         private void OnMethodInvocationComplete(MethodInvocationResult e)

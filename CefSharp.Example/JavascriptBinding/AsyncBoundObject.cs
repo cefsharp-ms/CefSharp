@@ -27,6 +27,12 @@ namespace CefSharp.Example.JavascriptBinding
             return divident / divisor;
         }
 
+        [JavascriptBinding(true)]
+        public void HelloNoResult()
+        {
+
+        }
+
         public string Hello(string name)
         {
             return "Hello " + name;
