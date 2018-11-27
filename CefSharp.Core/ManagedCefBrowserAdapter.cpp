@@ -129,7 +129,7 @@ MethodRunnerQueue^ ManagedCefBrowserAdapter::MethodRunnerQueue::get()
 void ManagedCefBrowserAdapter::MethodInvocationComplete(Object^ sender, MethodInvocationCompleteArgs^ e)
 {
     auto result = e->Result;
-    if (result->CallbackId.HasValue)
+    if (result != nullptr && result->CallbackId.HasValue)
     {
         _clientAdapter->MethodInvocationComplete(result);
     }

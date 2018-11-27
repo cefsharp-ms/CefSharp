@@ -20,6 +20,8 @@ namespace CefSharp.Internals
 
         public string MethodName { get; private set; }
 
+        public bool FireAndForget { get; set; }
+
         public List<object> Parameters
         {
             get { return parameters; }

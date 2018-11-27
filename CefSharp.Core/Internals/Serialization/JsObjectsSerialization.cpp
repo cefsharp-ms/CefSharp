@@ -30,6 +30,7 @@ namespace CefSharp
                     methodList->SetString(j++, StringUtils::ToNative(jsMethod->ManagedName));
                     methodList->SetString(j++, StringUtils::ToNative(jsMethod->JavascriptName));
                     methodList->SetInt(j++, jsMethod->ParameterCount);
+                    methodList->SetBool(j++, jsMethod->FireAndForget);
                 }
                 objList->SetList(4, methodList);
 
