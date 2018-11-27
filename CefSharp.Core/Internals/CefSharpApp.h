@@ -6,8 +6,11 @@
 
 #include "Stdafx.h"
 
+#include <map>
 #include "include/cef_app.h"
+#include "include/cef_worker_context.h"
 #include "AbstractCefSettings.h"
+#include "WorkerBindingManager.h"
 
 namespace CefSharp
 {
@@ -16,17 +19,26 @@ namespace CefSharp
     {
         gcroot<AbstractCefSettings^> _cefSettings;
         gcroot<IBrowserProcessHandler^> _browserProcessHandler;
+        gcroot<WorkerBindingManager^> _workerBindingsManager;
 
+        int _lastId;
+
+        std::map<int, CefRefPtr<CefWorkerContext>> _contexts;
     public:
         CefSharpApp(AbstractCefSettings^ cefSettings, IBrowserProcessHandler^ browserProcessHandler) :
             _cefSettings(cefSettings),
-            _browserProcessHandler(browserProcessHandler)
+            _browserProcessHandler(browserProcessHandler),
+            _lastId(0)
         {
             if (cefSettings->ExternalMessagePump && Object::ReferenceEquals(_browserProcessHandler, nullptr))
             {
                 throw gcnew Exception("browserProcessHandler cannot be null when using cefSettings.ExternalMessagePump");
             }
+
+            _workerBindingsManager = gcnew WorkerBindingManager(this, CefSharpSettings::JavascriptObjectRepository);
         }
+
+        void MethodInvocationComplete(MethodInvocationCompleteArgs^ e);
 
         ~CefSharpApp()
         {
@@ -166,21 +178,9 @@ namespace CefSharp
             }
         };
 
-        virtual void OnRenderProcessThreadCreated(CefRefPtr<CefListValue> extraInfo) OVERRIDE
-        {
-            auto extensionList = CefListValue::Create();
+        virtual void OnRenderProcessThreadCreated(CefRefPtr<CefListValue> extraInfo) OVERRIDE;
 
-            auto i = 0;
-            for each(CefExtension^ cefExtension in _cefSettings->Extensions)
-            {
-                auto ext = CefListValue::Create();
-                ext->SetString(0, StringUtils::ToNative(cefExtension->Name));
-                ext->SetString(1, StringUtils::ToNative(cefExtension->JavascriptCode));
-                extensionList->SetList(i++, ext);
-            }
-
-            extraInfo->SetList(0, extensionList);
-        }
+        virtual bool OnWorkerProcessMessageReceived(CefRefPtr<CefWorkerContext> context, CefRefPtr<CefProcessMessage> message) OVERRIDE;
 
         IMPLEMENT_REFCOUNTING(CefSharpApp)
     };

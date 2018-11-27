@@ -2,6 +2,7 @@
 //
 // Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.
 
+using CefSharp.Internals;
 using System;
 
 namespace CefSharp
@@ -20,6 +21,7 @@ namespace CefSharp
             LegacyJavascriptBindingEnabled = false;
             WcfTimeout = TimeSpan.FromSeconds(2);
             SubprocessExitIfParentProcessClosed = true;
+            JavascriptObjectRepository = new JavascriptObjectRepository();
         }
 
         /// <summary>
@@ -47,6 +49,8 @@ namespace CefSharp
         /// won't have access to the bound object information by default.
         /// </remarks>
         public static bool LegacyJavascriptBindingEnabled { get; set; }
+
+        public static JavascriptObjectRepository JavascriptObjectRepository { get; }
 
         /// <summary>
         /// WCF is used by RegisterJsObject feature for Javascript Binding
@@ -102,5 +106,10 @@ namespace CefSharp
         /// false.
         /// </summary>
         public static bool FocusedNodeChangedEnabled { get; set; }
+
+        public static void RegisterAsyncJsObjectForWorker(string name, object objectToBind, BindingOptions options = null)
+        {
+            JavascriptObjectRepository.Register(name, objectToBind, true, options);
+        }
     }
 }
