@@ -32,6 +32,9 @@ namespace CefSharp
         // The serialized registered object data waiting to be used.
         gcroot<Dictionary<String^, JavascriptObject^>^> _javascriptObjects;
 
+        gcroot<ConcurrentDictionary<int, JavascriptRootObjectWrapper^>^> _workerJavascriptRootWrappers;
+        gcroot<List<JavascriptObject^>^> _workerJavascriptObjects;
+
         gcroot<RegisterBoundObjectRegistry^> _registerBoundObjectRegistry;
 
     public:
@@ -49,6 +52,7 @@ namespace CefSharp
             _javascriptObjects = gcnew Dictionary<String^, JavascriptObject^>();
             _registerBoundObjectRegistry = gcnew RegisterBoundObjectRegistry();
             _legacyBindingEnabled = false;
+            _workerJavascriptRootWrappers = gcnew ConcurrentDictionary<int, JavascriptRootObjectWrapper^>();
         }
 
         ~CefAppUnmanagedWrapper()
@@ -82,6 +86,10 @@ namespace CefSharp
         virtual DECL void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) OVERRIDE;
         virtual DECL void OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefDOMNode> node) OVERRIDE;
         virtual DECL void OnUncaughtException(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context, CefRefPtr<CefV8Exception> exception, CefRefPtr<CefV8StackTrace> stackTrace) OVERRIDE;
+        virtual DECL void OnWorkerContextCreated(int worker_id, const CefString& url, CefRefPtr<CefV8Context> context) OVERRIDE;
+        virtual DECL void OnWorkerContextReleased(int worker_id, CefRefPtr<CefV8Context> context) OVERRIDE;
+        virtual DECL bool OnWorkerProcessMessageReceived(CefRefPtr<CefWorkerContext> worker_context, CefRefPtr<CefProcessMessage> message) OVERRIDE;
+        virtual DECL bool AllowScriptExtensionsForWorker(const CefString& script_url) OVERRIDE;
 
         IMPLEMENT_REFCOUNTING(CefAppUnmanagedWrapper);
     };

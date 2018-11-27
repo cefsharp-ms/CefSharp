@@ -33,7 +33,7 @@ namespace CefSharp.Internals
     {
         public const string AllObjects = "All";
 
-        private static long lastId;
+        private static long LastId;
 
         public event EventHandler<JavascriptBindingEventArgs> ResolveObject;
         public event EventHandler<JavascriptBindingCompleteEventArgs> ObjectBoundInJavascript;
@@ -119,7 +119,7 @@ namespace CefSharp.Internals
 
         private JavascriptObject CreateJavascriptObject(bool camelCaseJavascriptNames)
         {
-            var id = Interlocked.Increment(ref lastId);
+            var id = Interlocked.Increment(ref LastId);
 
             var result = new JavascriptObject { Id = id, CamelCaseJavascriptNames = camelCaseJavascriptNames };
             objects[id] = result;

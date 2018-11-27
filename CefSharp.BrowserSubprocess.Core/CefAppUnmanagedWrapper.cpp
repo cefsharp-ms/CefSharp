@@ -73,6 +73,89 @@ namespace CefSharp
         }
     };
 
+    void CefAppUnmanagedWrapper::OnWorkerContextCreated(int worker_id, const CefString& url, CefRefPtr<CefV8Context> context)
+    {
+        if (static_cast<List<JavascriptObject^>^>(_workerJavascriptObjects) != nullptr && _workerJavascriptObjects->Count > 0)
+        {
+            auto rootObject = gcnew JavascriptRootObjectWrapper(0, nullptr);
+            _workerJavascriptRootWrappers->TryAdd(worker_id, rootObject);
+
+            rootObject->Bind(_workerJavascriptObjects, context->GetGlobal());
+        }
+    }
+
+    void CefAppUnmanagedWrapper::OnWorkerContextReleased(int worker_id, CefRefPtr<CefV8Context> context)
+    {
+        JavascriptRootObjectWrapper^ rootObject;
+        if (_workerJavascriptRootWrappers->TryRemove(worker_id, rootObject))
+        {
+            delete rootObject;
+        }
+    }
+
+    bool CefAppUnmanagedWrapper::AllowScriptExtensionsForWorker(const CefString& script_url)
+    {
+        return true;
+    }
+
+    bool CefAppUnmanagedWrapper::OnWorkerProcessMessageReceived(CefRefPtr<CefWorkerContext> worker_context, CefRefPtr<CefProcessMessage> message)
+    {
+        auto name = message->GetName();
+        auto argList = message->GetArgumentList();
+        if (name == kJavascriptAsyncMethodCallResponse)
+        {
+            auto frameId = GetInt64(argList, 0);
+            auto callbackId = GetInt64(argList, 1);
+
+            JavascriptRootObjectWrapper ^ rootObjectWrapper;
+            _workerJavascriptRootWrappers->TryGetValue(worker_context->GetWorkerId(), rootObjectWrapper);
+
+            if (rootObjectWrapper != nullptr)
+            {
+                JavascriptAsyncMethodCallback ^ callback;
+                if (rootObjectWrapper->TryGetAndRemoveMethodCallback(callbackId, callback))
+                {
+
+                    try
+                    {
+                        auto context = worker_context->GetV8Context();
+                        if (context.get() && context->Enter())
+                        {
+                            try
+                            {
+                                auto success = argList->GetBool(2);
+                                if (success)
+                                {
+                                    callback->Success(DeserializeV8Object(argList, 3));
+                                }
+                                else
+                                {
+                                    callback->Fail(argList->GetString(3));
+                                }
+                            }
+                            finally
+                            {
+                           context->Exit();
+                            }
+                        }
+                        else
+                        {
+                            callback->Fail("Unable to Enter Context");
+                        }
+
+                    }
+                    finally
+                    {
+                        //dispose
+                        delete callback;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     void CefAppUnmanagedWrapper::OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context)
     {
         if (!Object::ReferenceEquals(_handler, nullptr))
@@ -693,6 +776,12 @@ namespace CefSharp
 
                     _extensions->Add(ext);
                 }
+            }
+
+            auto workerBindings = extraInfo->GetList(1);
+            if (workerBindings.get())
+            {
+                _workerJavascriptObjects = DeserializeJsObjects(extraInfo, 1);
             }
         }
     }

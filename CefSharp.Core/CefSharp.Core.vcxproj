@@ -234,6 +234,7 @@
     <ClCompile Include="Internals\CefContextMenuParamsWrapper.cpp" />
     <ClCompile Include="Internals\CefExtensionWrapper.cpp" />
     <ClCompile Include="Internals\CefFrameWrapper.cpp" />
+    <ClCompile Include="Internals\CefSharpApp.cpp" />
     <ClCompile Include="Internals\CefSharpBrowserWrapper.cpp" />
     <ClCompile Include="Internals\CefValueWrapper.cpp" />
     <ClCompile Include="Internals\ClientAdapter.cpp" />
@@ -243,6 +244,7 @@
     <ClCompile Include="Internals\JavascriptCallbackFactory.cpp" />
     <ClCompile Include="Internals\Serialization\ObjectsSerialization.cpp" />
     <ClCompile Include="Internals\StringVisitor.cpp" />
+    <ClCompile Include="Internals\WorkerBindingManager.cpp" />
     <ClCompile Include="ManagedCefBrowserAdapter.cpp" />
     <ClCompile Include="NativeMethodWrapper.cpp" />
     <ClCompile Include="Internals\Serialization\V8Serialization.cpp" />
@@ -297,6 +299,7 @@
     <ClInclude Include="Internals\CefTaskScheduler.h" />
     <ClInclude Include="Internals\CefTaskWrapper.h" />
     <ClInclude Include="Internals\CefWrapper.h" />
+    <ClInclude Include="Internals\WorkerBindingManager.h" />
     <ClInclude Include="PopupFeatures.h" />
     <ClInclude Include="Internals\CefRequestContextHandlerAdapter.h" />
     <ClInclude Include="resource.h" />

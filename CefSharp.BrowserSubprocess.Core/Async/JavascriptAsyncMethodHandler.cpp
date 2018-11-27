@@ -9,6 +9,8 @@
 #include "Serialization/V8Serialization.h"
 #include "CefAppUnmanagedWrapper.h"
 
+#include "include/cef_worker_context.h"
+
 using namespace CefSharp::Internals::Messaging;
 using namespace CefSharp::Internals::Serialization;
 
@@ -21,30 +23,82 @@ namespace CefSharp
             bool JavascriptAsyncMethodHandler::Execute(const CefString& name, CefRefPtr<CefV8Value> object, const CefV8ValueList& arguments, CefRefPtr<CefV8Value>& retval, CefString& exception)
             {
                 auto context = CefV8Context::GetCurrentContext();
-                auto browser = context->GetBrowser();
 
-                CefRefPtr<CefV8Value> promiseData;
-                CefRefPtr<CefV8Exception> promiseException;
-                //this will create a promise and give us the reject/resolve functions {p: Promise, res: resolve(), rej: reject()}
-                if (!context->Eval(CefAppUnmanagedWrapper::kPromiseCreatorScript, CefString(), 0, promiseData, promiseException))
+                if (context.get() && context->Enter())
                 {
-                    LOG(WARNING) << "JavascriptAsyncMethodHandler::Execute promiseData returned exception: " + promiseException->GetMessage().ToString();
+                    try
+                    {
+                        CefRefPtr<CefV8Value> promiseData;
+                        CefRefPtr<CefV8Exception> promiseException;
+                        //this will create a promise and give us the reject/resolve functions {p: Promise, res: resolve(), rej: reject()}
+                        if (!context->Eval(CefAppUnmanagedWrapper::kPromiseCreatorScript, CefString(), 0, promiseData, promiseException))
+                        {
+                            LOG(WARNING) << "JavascriptAsyncMethodHandler::Execute promiseData returned exception: " + promiseException->GetMessage().ToString();
 
-                    exception = promiseException->GetMessage();
+                            exception = promiseException->GetMessage();
 
-                    return true;
+                            return true;
+                        }
+
+                        //when refreshing the browser this is sometimes null, in this case return true and log message
+                        //https://github.com/cefsharp/CefSharp/pull/2446
+                        if (promiseData == NULL)
+                        {
+                            LOG(WARNING) << "JavascriptAsyncMethodHandler::Execute promiseData returned NULL";
+
+                            return true;
+                        }
+
+                        retval = promiseData->GetValue("p");
+
+                        auto resolve = promiseData->GetValue("res");
+                        auto reject = promiseData->GetValue("rej");
+                        auto callback = gcnew JavascriptAsyncMethodCallback(context, resolve, reject);
+                        auto callbackId = _methodCallbackSave->Invoke(callback);
+
+                        auto request = CefProcessMessage::Create(kJavascriptAsyncMethodCallRequest);
+                        auto argList = request->GetArgumentList();
+                        auto params = CefListValue::Create();
+                        for (auto i = 0; i < arguments.size(); i++)
+                        {
+                            SerializeV8Object(arguments[i], params, i, _callbackRegistry);
+                        }
+
+                        auto frame = context->GetFrame();
+                        long frameId = -1;
+                        if (frame)
+                        {
+                            frameId = frame->GetIdentifier();
+                        }
+                        SetInt64(argList, 0, frameId);
+                        SetInt64(argList, 1, _objectId);
+                        SetInt64(argList, 2, callbackId);
+                        argList->SetString(3, name);
+                        argList->SetList(4, params);
+
+                        auto browser = context->GetBrowser();
+                        if (browser.get())
+                        {
+                            browser->SendProcessMessage(CefProcessId::PID_BROWSER, request);
+                        }
+                        else
+                        {
+                            auto workerContext = context->GetWorkerContext();
+                            workerContext->Send(CefProcessId::PID_BROWSER, request);
+                        }
+                    }
+                    finally
+                    {
+                         context->Exit();
+                    }
+
                 }
 
-                //when refreshing the browser this is sometimes null, in this case return true and log message
-                //https://github.com/cefsharp/CefSharp/pull/2446
-                if (promiseData == NULL)
-                {
-                    LOG(WARNING) << "JavascriptAsyncMethodHandler::Execute promiseData returned NULL";
+                
 
-                    return true;
-                }
+                
 
-                retval = promiseData->GetValue("p");
+               /* retval = promiseData->GetValue("p");
 
                 auto resolve = promiseData->GetValue("res");
                 auto reject = promiseData->GetValue("rej");
@@ -65,7 +119,7 @@ namespace CefSharp
                 argList->SetString(3, name);
                 argList->SetList(4, params);
 
-                browser->SendProcessMessage(CefProcessId::PID_BROWSER, request);
+                browser->SendProcessMessage(CefProcessId::PID_BROWSER, request);*/
 
                 return true;
             }

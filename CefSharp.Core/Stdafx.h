@@ -11,6 +11,7 @@
 #endif
 
 #include <vector>
+#include <map>
 #include <list>
 
 #include <include/cef_base.h>

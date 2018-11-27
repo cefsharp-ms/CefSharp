@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using CefSharp.Example.JavascriptBinding;
 using CefSharp.Example.Properties;
 using CefSharp.Example.Proxy;
 using CefSharp.SchemeHandler;
@@ -193,6 +194,8 @@ namespace CefSharp.Example
             //See issue https://github.com/cefsharp/CefSharp/issues/1203 for details
             CefSharpSettings.LegacyJavascriptBindingEnabled = true;
             CefSharpSettings.WcfEnabled = false;
+
+            CefSharpSettings.RegisterAsyncJsObjectForWorker("testw", new AsyncBoundObject());
 
             //Exit the subprocess if the parent process happens to close
             //This is optional at the moment
