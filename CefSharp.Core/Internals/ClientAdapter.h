@@ -108,7 +108,8 @@ namespace CefSharp
                 const CefString& target_url, const CefString& target_frame_name,
                 CefLifeSpanHandler::WindowOpenDisposition target_disposition, bool user_gesture,
                 const CefPopupFeatures& popupFeatures,
-                CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client, CefBrowserSettings& settings, bool* no_javascript_access) OVERRIDE;
+                CefWindowInfo& windowInfo, CefRefPtr<CefClient>& client, CefBrowserSettings& settings, CefRefPtr<CefDictionaryValue>& extra_info,
+                bool* no_javascript_access) OVERRIDE;
             virtual DECL void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
             virtual DECL bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
             virtual DECL void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;

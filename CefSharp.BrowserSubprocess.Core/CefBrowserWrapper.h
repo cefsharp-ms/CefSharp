@@ -29,13 +29,16 @@ namespace CefSharp
         //Frame Identifier is used as Key
         property ConcurrentDictionary<int64, JavascriptRootObjectWrapper^>^ JavascriptRootObjectWrappers;
 
+        property ICollection<JavascriptObject^>^ JavascriptObjects;
+
     public:
-        CefBrowserWrapper(CefRefPtr<CefBrowser> cefBrowser)
+        CefBrowserWrapper(CefRefPtr<CefBrowser> cefBrowser, ICollection<JavascriptObject^>^ jsObjects)
         {
             _cefBrowser = cefBrowser;
             BrowserId = cefBrowser->GetIdentifier();
             IsPopup = cefBrowser->IsPopup();
 
+            JavascriptObjects = jsObjects;
             JavascriptRootObjectWrappers = gcnew ConcurrentDictionary<int64, JavascriptRootObjectWrapper^>();
         }
 

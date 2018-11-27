@@ -7,10 +7,13 @@
 #include "ManagedCefBrowserAdapter.h"
 #include "WindowInfo.h"
 #include "Internals/Messaging/Messages.h"
+#include "Internals/Serialization/Primitives.h"
+#include "Internals/Serialization/JsObjectsSerialization.h"
 #include "Internals/CefFrameWrapper.h"
 #include "Internals/CefSharpBrowserWrapper.h"
 
 using namespace CefSharp::Internals::Messaging;
+using namespace CefSharp::Internals::Serialization;
 
 bool ManagedCefBrowserAdapter::IsDisposed::get()
 {
@@ -35,7 +38,7 @@ void ManagedCefBrowserAdapter::CreateBrowser(IWindowInfo^ windowInfo, BrowserSet
     }
 
     if (!CefBrowserHost::CreateBrowser(*cefWindowInfoWrapper->GetWindowInfo(), _clientAdapter.get(), addressNative,
-        *browserSettings->_browserSettings, static_cast<CefRefPtr<CefRequestContext>>(requestContext)))
+        *browserSettings->_browserSettings, CreateExtraInfo(), "", static_cast<CefRefPtr<CefRequestContext>>(requestContext)))
     {
         throw gcnew InvalidOperationException("CefBrowserHost::CreateBrowser call failed, review the CEF log file for more details.");
     }
@@ -129,6 +132,20 @@ void ManagedCefBrowserAdapter::MethodInvocationComplete(Object^ sender, MethodIn
     {
         _clientAdapter->MethodInvocationComplete(result);
     }
+}
+
+CefRefPtr<CefDictionaryValue> CefSharp::ManagedCefBrowserAdapter::CreateExtraInfo()
+{
+    auto extra_info = CefDictionaryValue::Create();
+    auto objectRepository = this->_javaScriptObjectRepository;
+    if (objectRepository->HasBoundObjects && CefSharpSettings::LegacyJavascriptBindingEnabled)
+    {
+        auto bindings = CefListValue::Create();
+        SerializeJsObjects(objectRepository->GetObjects(nullptr), bindings, 0);
+        extra_info->SetList("bindings", bindings);
+    }
+
+    return extra_info;
 }
 
 MCefRefPtr<ClientAdapter> ManagedCefBrowserAdapter::GetClientAdapter()

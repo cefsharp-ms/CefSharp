@@ -45,9 +45,18 @@ namespace CefSharp
     };
 
     // CefRenderProcessHandler
-    void CefAppUnmanagedWrapper::OnBrowserCreated(CefRefPtr<CefBrowser> browser)
+    void CefAppUnmanagedWrapper::OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info)
     {
-        auto wrapper = gcnew CefBrowserWrapper(browser);
+        ICollection<JavascriptObject^>^ jsObjects = nullptr;
+        if (extra_info.get() != nullptr && extra_info->HasKey("bindings"))
+        {
+            _legacyBindingEnabled = true;
+
+            auto list = extra_info->GetList("bindings");
+            jsObjects = DeserializeJsObjects(list, 0);
+        }
+
+        auto wrapper = gcnew CefBrowserWrapper(browser, jsObjects);
         _onBrowserCreated->Invoke(wrapper);
 
         //Multiple CefBrowserWrappers created when opening popups
@@ -77,12 +86,17 @@ namespace CefSharp
 
         if (_legacyBindingEnabled)
         {
-            if (_javascriptObjects->Count > 0)
+            auto browserWrapper = FindBrowserWrapper(browser->GetIdentifier());
+            if (browserWrapper != nullptr)
             {
-                auto rootObject = GetJsRootObjectWrapper(browser->GetIdentifier(), frame->GetIdentifier());
-                if (rootObject != nullptr)
+                auto jsObjects = browserWrapper->JavascriptObjects;
+                if (jsObjects != nullptr && jsObjects->Count > 0)
                 {
-                    rootObject->Bind(_javascriptObjects->Values, context->GetGlobal());
+                    auto rootObject = GetJsRootObjectWrapper(browser->GetIdentifier(), frame->GetIdentifier());
+                    if (rootObject != nullptr)
+                    {
+                        rootObject->Bind(jsObjects, context->GetGlobal());
+                    }
                 }
             }
         }
@@ -494,24 +508,24 @@ namespace CefSharp
             //to the cache
             if (useLegacyBehaviour)
             {
-                _legacyBindingEnabled = true;
+                //_legacyBindingEnabled = true;
 
-                auto javascriptObjects = DeserializeJsObjects(argList, 4);
+                //auto javascriptObjects = DeserializeJsObjects(argList, 4);
 
-                for each (JavascriptObject^ obj in Enumerable::OfType<JavascriptObject^>(javascriptObjects))
-                {
-                    //Using LegacyBinding with multiple ChromiumWebBrowser instances that share the same
-                    //render process and using LegacyBinding will cause problems for the limited caching implementation
-                    //that exists at the moment, for now we'll remove an object if already exists, same behaviour
-                    //as the new binding method. 
-                    //TODO: This should be removed when https://github.com/cefsharp/CefSharp/issues/2306
-                    //Is complete as objects will be stored at the browser level
-                    if (_javascriptObjects->ContainsKey(obj->JavascriptName))
-                    {
-                        _javascriptObjects->Remove(obj->JavascriptName);
-                    }
-                    _javascriptObjects->Add(obj->JavascriptName, obj);
-                }
+                //for each (JavascriptObject^ obj in Enumerable::OfType<JavascriptObject^>(javascriptObjects))
+                //{
+                //    //Using LegacyBinding with multiple ChromiumWebBrowser instances that share the same
+                //    //render process and using LegacyBinding will cause problems for the limited caching implementation
+                //    //that exists at the moment, for now we'll remove an object if already exists, same behaviour
+                //    //as the new binding method. 
+                //    //TODO: This should be removed when https://github.com/cefsharp/CefSharp/issues/2306
+                //    //Is complete as objects will be stored at the browser level
+                //    if (_javascriptObjects->ContainsKey(obj->JavascriptName))
+                //    {
+                //        _javascriptObjects->Remove(obj->JavascriptName);
+                //    }
+                //    _javascriptObjects->Add(obj->JavascriptName, obj);
+                //}
             }
             else
             {

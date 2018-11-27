@@ -191,7 +191,8 @@ namespace CefSharp.Example
 
             //Legacy Binding Behaviour doesn't work for cross-site navigation (navigating to a different domain)
             //See issue https://github.com/cefsharp/CefSharp/issues/1203 for details
-            //CefSharpSettings.LegacyJavascriptBindingEnabled = true;
+            CefSharpSettings.LegacyJavascriptBindingEnabled = true;
+            CefSharpSettings.WcfEnabled = false;
 
             //Exit the subprocess if the parent process happens to close
             //This is optional at the moment

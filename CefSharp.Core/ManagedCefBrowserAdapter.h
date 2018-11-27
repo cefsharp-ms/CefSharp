@@ -18,6 +18,7 @@
 #include "Internals/RenderClientAdapter.h"
 #include "Internals/JavascriptCallbackFactory.h"
 
+
 using namespace System::Diagnostics;
 using namespace System::ServiceModel;
 using namespace System::Threading;
@@ -42,6 +43,8 @@ namespace CefSharp
 
     internal:
         MCefRefPtr<ClientAdapter> GetClientAdapter();
+
+        CefRefPtr<CefDictionaryValue> CreateExtraInfo();
 
     public:
         ManagedCefBrowserAdapter(IWebBrowserInternal^ webBrowserInternal, bool offScreenRendering)

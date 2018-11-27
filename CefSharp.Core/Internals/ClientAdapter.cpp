@@ -103,7 +103,8 @@ namespace CefSharp
         bool ClientAdapter::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& target_url,
             const CefString& target_frame_name, CefLifeSpanHandler::WindowOpenDisposition target_disposition, bool user_gesture,
             const CefPopupFeatures& popupFeatures, CefWindowInfo& windowInfo,
-            CefRefPtr<CefClient>& client, CefBrowserSettings& settings, bool* no_javascript_access)
+            CefRefPtr<CefClient>& client, CefBrowserSettings& settings, CefRefPtr<CefDictionaryValue>& extra_info,
+            bool* no_javascript_access)
         {
             auto handler = _browserControl->LifeSpanHandler;
 
@@ -158,6 +159,8 @@ namespace CefSharp
                     if (browserAdapter != nullptr)
                     {
                         client = browserAdapter->GetClientAdapter().get();
+
+                        extra_info = browserAdapter->CreateExtraInfo();
                     }
                 }
             }
@@ -620,27 +623,6 @@ namespace CefSharp
 
         void ClientAdapter::OnRenderViewReady(CefRefPtr<CefBrowser> browser)
         {
-            if (CefSharpSettings::LegacyJavascriptBindingEnabled)
-            {
-                if (!Object::ReferenceEquals(_browserAdapter, nullptr) && !_browserAdapter->IsDisposed && !browser->IsPopup())
-                {
-                    auto objectRepository = _browserAdapter->JavascriptObjectRepository;
-
-                    //For legacy binding we only send kJavascriptRootObjectResponse when we have bound objects
-                    if (objectRepository->HasBoundObjects)
-                    {
-                        auto msg = CefProcessMessage::Create(kJavascriptRootObjectResponse);
-                        auto responseArgList = msg->GetArgumentList();
-                        responseArgList->SetBool(0, true); //Use Legacy Behaviour (auto bind on context creation)
-                        responseArgList->SetInt(1, -1);  //BrowserId
-                        SetInt64(responseArgList, 2, 0); //FrameId
-                        SetInt64(responseArgList, 3, 0); //CallbackId
-                        SerializeJsObjects(objectRepository->GetObjects(nullptr), responseArgList, 4);
-                        browser->SendProcessMessage(CefProcessId::PID_RENDERER, msg);
-                    }
-                }
-            }
-
             auto handler = _browserControl->RequestHandler;
 
             if (handler != nullptr)
