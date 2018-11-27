@@ -18,16 +18,17 @@ bool ManagedCefBrowserAdapter::IsDisposed::get()
     return _isDisposed;
 }
 
-void ManagedCefBrowserAdapter::CreateOffscreenBrowser(IntPtr windowHandle, BrowserSettings^ browserSettings, RequestContext^ requestContext, String^ address)
+void ManagedCefBrowserAdapter::CreateOffscreenBrowser(IntPtr windowHandle, BrowserSettings^ browserSettings, RequestContext^ requestContext, String^ address, String^ affinity)
 {
     auto hwnd = static_cast<HWND>(windowHandle.ToPointer());
 
     CefWindowInfo window;
     window.SetAsWindowless(hwnd);
     CefString addressNative = StringUtils::ToNative(address);
+    CefString affinityNative = StringUtils::ToNative(affinity);
 
     if (!CefBrowserHost::CreateBrowser(window, _clientAdapter.get(), addressNative,
-        *browserSettings->_browserSettings, CreateExtraInfo(), "", static_cast<CefRefPtr<CefRequestContext>>(requestContext)))
+        *browserSettings->_browserSettings, CreateExtraInfo(), affinityNative, static_cast<CefRefPtr<CefRequestContext>>(requestContext)))
     {
         throw gcnew InvalidOperationException("Failed to create offscreen browser. Call Cef.Initialize() first.");
     }
@@ -68,7 +69,7 @@ void ManagedCefBrowserAdapter::OnAfterBrowserCreated(IBrowser^ browser)
     }
 }
 
-void ManagedCefBrowserAdapter::CreateBrowser(BrowserSettings^ browserSettings, RequestContext^ requestContext, IntPtr sourceHandle, String^ address)
+void ManagedCefBrowserAdapter::CreateBrowser(BrowserSettings^ browserSettings, RequestContext^ requestContext, IntPtr sourceHandle, String^ address, String^ affinity)
 {
     HWND hwnd = static_cast<HWND>(sourceHandle.ToPointer());
     RECT rect;
@@ -76,9 +77,10 @@ void ManagedCefBrowserAdapter::CreateBrowser(BrowserSettings^ browserSettings, R
     CefWindowInfo window;
     window.SetAsChild(hwnd, rect);
     CefString addressNative = StringUtils::ToNative(address);
+    CefString affinityNative = StringUtils::ToNative(affinity);
 
     CefBrowserHost::CreateBrowser(window, _clientAdapter.get(), addressNative,
-        *browserSettings->_browserSettings, CreateExtraInfo(), "", static_cast<CefRefPtr<CefRequestContext>>(requestContext));
+        *browserSettings->_browserSettings, CreateExtraInfo(), affinityNative, static_cast<CefRefPtr<CefRequestContext>>(requestContext));
 }
 
 void ManagedCefBrowserAdapter::Resize(int width, int height)

@@ -91,6 +91,9 @@ namespace CefSharp.WinForms
                 requestContext = value;
             }
         }
+
+        public string Affinity { get; }
+
         /// <summary>
         /// A flag that indicates whether the control is currently loading one or more web pages (true) or not (false).
         /// </summary>
@@ -363,12 +366,12 @@ namespace CefSharp.WinForms
         /// <param name="address">The address.</param>
         /// <param name="requestContext">Request context that will be used for this browser instance,
         /// if null the Global Request Context will be used</param>
-        public ChromiumWebBrowser(string address, IRequestContext requestContext = null)
+        public ChromiumWebBrowser(string address, IRequestContext requestContext = null, string affinity = "")
         {
             Dock = DockStyle.Fill;
             Address = address;
             RequestContext = requestContext;
-
+            Affinity = affinity;
             InitializeFieldsAndCefIfRequired();
         }
 
@@ -621,7 +624,7 @@ namespace CefSharp.WinForms
                 if (IsBrowserInitialized == false || browser == null)
                 {
                     //TODO: Revert temp workaround for default url not loading
-                    managedCefBrowserAdapter.CreateBrowser(BrowserSettings, (RequestContext)RequestContext, Handle, null);
+                    managedCefBrowserAdapter.CreateBrowser(BrowserSettings, (RequestContext)RequestContext, Handle, null, Affinity);
                 }
                 else
                 {
