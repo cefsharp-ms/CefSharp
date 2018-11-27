@@ -20,11 +20,12 @@ bool ManagedCefBrowserAdapter::IsDisposed::get()
     return _isDisposed;
 }
 
-void ManagedCefBrowserAdapter::CreateBrowser(IWindowInfo^ windowInfo, BrowserSettings^ browserSettings, RequestContext^ requestContext, String^ address)
+void ManagedCefBrowserAdapter::CreateBrowser(IWindowInfo^ windowInfo, BrowserSettings^ browserSettings, RequestContext^ requestContext, String^ address, String^ affinity)
 {
     auto cefWindowInfoWrapper = static_cast<WindowInfo^>(windowInfo);
 
     CefString addressNative = StringUtils::ToNative(address);
+    CefString affinityNative = StringUtils::ToNative(affinity);
 
     if (browserSettings == nullptr)
     {
@@ -38,7 +39,7 @@ void ManagedCefBrowserAdapter::CreateBrowser(IWindowInfo^ windowInfo, BrowserSet
     }
 
     if (!CefBrowserHost::CreateBrowser(*cefWindowInfoWrapper->GetWindowInfo(), _clientAdapter.get(), addressNative,
-        *browserSettings->_browserSettings, CreateExtraInfo(), "", static_cast<CefRefPtr<CefRequestContext>>(requestContext)))
+        *browserSettings->_browserSettings, CreateExtraInfo(), affinityNative, static_cast<CefRefPtr<CefRequestContext>>(requestContext)))
     {
         throw gcnew InvalidOperationException("CefBrowserHost::CreateBrowser call failed, review the CEF log file for more details.");
     }

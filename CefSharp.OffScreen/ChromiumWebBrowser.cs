@@ -190,6 +190,8 @@ namespace CefSharp.OffScreen
         /// <value>The accessibility handler.</value>
         public IAccessibilityHandler AccessibilityHandler { get; set; }
 
+        public string Affinity { get; }
+
         /// <summary>
         /// Event handler that will get called when the resource load for a navigation fails or is canceled.
         /// It's important to note this event is fired on a CEF UI thread, which by default is not the same as your application UI
@@ -293,7 +295,7 @@ namespace CefSharp.OffScreen
         /// <param name="automaticallyCreateBrowser">automatically create the underlying Browser</param>
         /// <exception cref="System.InvalidOperationException">Cef::Initialize() failed</exception>
         public ChromiumWebBrowser(string address = "", BrowserSettings browserSettings = null,
-            RequestContext requestContext = null, bool automaticallyCreateBrowser = true)
+            RequestContext requestContext = null, bool automaticallyCreateBrowser = true, string affinity = "")
         {
             if (!Cef.IsInitialized)
             {
@@ -307,7 +309,7 @@ namespace CefSharp.OffScreen
 
             ResourceHandlerFactory = new DefaultResourceHandlerFactory();
             RequestContext = requestContext;
-
+            Affinity = affinity;
             Cef.AddDisposable(this);
             Address = address;
 
@@ -413,7 +415,7 @@ namespace CefSharp.OffScreen
                 windowInfo.SetAsWindowless(IntPtr.Zero);
             }
 
-            managedCefBrowserAdapter.CreateBrowser(windowInfo, browserSettings, (RequestContext)RequestContext, Address);
+            managedCefBrowserAdapter.CreateBrowser(windowInfo, browserSettings, (RequestContext)RequestContext, Address, Affinity);
 
             browserSettings = null;
         }

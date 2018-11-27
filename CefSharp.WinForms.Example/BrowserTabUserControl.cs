@@ -27,7 +27,7 @@ namespace CefSharp.WinForms.Example
         {
             InitializeComponent();
 
-            var browser = new ChromiumWebBrowser(url)
+            var browser = new ChromiumWebBrowser(url, affinity: "affinity")
             {
                 Dock = DockStyle.Fill
             };

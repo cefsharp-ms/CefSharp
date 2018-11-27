@@ -120,7 +120,7 @@ namespace CefSharp
         }
 
         virtual void OnAfterBrowserCreated(IBrowser^ browser);
-        void CreateBrowser(IWindowInfo^ windowInfo, BrowserSettings^ browserSettings, RequestContext^ requestContext, String^ address);
+        void CreateBrowser(IWindowInfo^ windowInfo, BrowserSettings^ browserSettings, RequestContext^ requestContext, String^ address, String^ affinity);
         virtual void Resize(int width, int height);
 
         virtual IBrowser^ GetBrowser(int browserId);
