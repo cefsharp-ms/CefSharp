@@ -158,6 +158,9 @@ namespace CefSharp.WinForms
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DefaultValue(null)]
         public string Address { get; private set; }
 
+        [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DefaultValue(null)]
+        public IColorChooserHandler ColorChooserHandler { get; set; }
+
         /// <summary>
         /// Implement <see cref="IDialogHandler" /> and assign to handle dialog events.
         /// </summary>

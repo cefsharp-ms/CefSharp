@@ -33,7 +33,8 @@ namespace CefSharp
             public CefDialogHandler,
             public CefDragHandler,
             public CefDownloadHandler,
-            public CefFindHandler
+            public CefFindHandler,
+            public CefColorChooserHandler
         {
         private:
             gcroot<IWebBrowserInternal^> _browserControl;
@@ -119,6 +120,7 @@ namespace CefSharp
             virtual DECL bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) OVERRIDE;
             virtual DECL bool OnSyncProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
                 CefRefPtr<CefProcessMessage> message, CefRefPtr<CefMessageCallback> callback) OVERRIDE;
+            virtual CefRefPtr<CefColorChooserHandler> GetColorChooserHandler() OVERRIDE { return this; }
 
 
             // CefLifeSpanHandler
@@ -215,6 +217,11 @@ namespace CefSharp
 
             //CefFindHandler
             virtual DECL void OnFindResult(CefRefPtr<CefBrowser> browser, int identifier, int count, const CefRect& selectionRect, int activeMatchOrdinal, bool finalUpdate);
+
+            //CefColorChooserHandler
+            virtual bool OnCreateColorSelection(CefRefPtr<CefBrowser> browser, cef_color_t default_color, CefRefPtr<CefColorChooserCallback> callback) OVERRIDE;
+            virtual void OnSelectedColor(CefRefPtr<CefBrowser> browser, cef_color_t color) OVERRIDE;
+            virtual void OnEndColorSelection(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
             //sends out an eval script request to the render process
             Task<JavascriptResponse^>^ EvaluateScriptAsync(int browserId, bool isBrowserPopup, int64 frameId, String^ script, String^ scriptUrl, int startLine, Nullable<TimeSpan> timeout);

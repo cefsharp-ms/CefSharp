@@ -40,6 +40,7 @@ namespace CefSharp.WinForms.Example
             browser.RequestHandler = new WinFormsRequestHandler(openNewTab);
             browser.JsDialogHandler = new JsDialogHandler();
             browser.DownloadHandler = new DownloadHandler();
+            browser.ColorChooserHandler = new ColorChooserHandler(this);
             if (multiThreadedMessageLoopEnabled)
             {
                 browser.KeyboardHandler = new KeyboardHandler();

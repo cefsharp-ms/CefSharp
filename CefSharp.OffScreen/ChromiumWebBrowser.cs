@@ -108,6 +108,9 @@ namespace CefSharp.OffScreen
         /// </summary>
         /// <value>The request context.</value>
         public IRequestContext RequestContext { get; private set; }
+
+        public IColorChooserHandler ColorChooserHandler { get; set; }
+
         /// <summary>
         /// Implement <see cref="IJsDialogHandler" /> and assign to handle events related to JavaScript Dialogs.
         /// </summary>
