@@ -103,6 +103,8 @@ namespace CefSharp
         /// </summary>
         IJavascriptObjectRepository JavascriptObjectRepository { get; }
 
+        IColorChooserHandler ColorChooserHandler { get; set; }
+
         /// <summary>
         /// Implement <see cref="IDialogHandler" /> and assign to handle dialog events.
         /// </summary>

@@ -18,6 +18,7 @@
 #include "CefSharpBrowserWrapper.h"
 #include "CefDownloadItemCallbackWrapper.h"
 #include "CefBeforeDownloadCallbackWrapper.h"
+#include "CefColorChooserCallbackWrapper.h"
 #include "CefFileDialogCallbackWrapper.h"
 #include "CefAuthCallbackWrapper.h"
 #include "CefJSDialogCallbackWrapper.h"
@@ -1549,6 +1550,45 @@ namespace CefSharp
                         wrapper->Browser->SendProcessMessage(CefProcessId::PID_RENDERER, message);
                     }
                 }
+            }
+        }
+
+        bool ClientAdapter::OnCreateColorSelection(CefRefPtr<CefBrowser> browser, cef_color_t default_color, CefRefPtr<CefColorChooserCallback> callback)
+        {
+            auto handler = _browserControl->ColorChooserHandler;
+
+            if (handler != nullptr)
+            {
+                auto callbackWrapper = gcnew CefColorChooserCallbackWrapper(callback);
+                auto browserWrapper = GetBrowserWrapper(browser->GetIdentifier(), browser->IsPopup());
+
+                return handler->OnCreateColorSelection(browserWrapper, default_color, callbackWrapper);
+            }
+
+            return false;
+        }
+
+        void ClientAdapter::OnSelectedColor(CefRefPtr<CefBrowser> browser, cef_color_t color)
+        {
+            auto handler = _browserControl->ColorChooserHandler;
+
+            if (handler != nullptr)
+            {
+                auto browserWrapper = GetBrowserWrapper(browser->GetIdentifier(), browser->IsPopup());
+
+                handler->OnSelectedColor(browserWrapper, color);
+            }
+        }
+
+        void ClientAdapter::OnEndColorSelection(CefRefPtr<CefBrowser> browser)
+        {
+            auto handler = _browserControl->ColorChooserHandler;
+
+            if (handler != nullptr)
+            {
+                auto browserWrapper = GetBrowserWrapper(browser->GetIdentifier(), browser->IsPopup());
+
+                handler->OnEndColorSelection(browserWrapper);
             }
         }
     }

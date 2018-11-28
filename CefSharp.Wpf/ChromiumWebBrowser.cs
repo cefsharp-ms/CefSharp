@@ -142,6 +142,7 @@ namespace CefSharp.Wpf
                 requestContext = value;
             }
         }
+        public IColorChooserHandler ColorChooserHandler { get; set; }
         /// <summary>
         /// Implement <see cref="IDialogHandler" /> and assign to handle dialog events.
         /// </summary>
