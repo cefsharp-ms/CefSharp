@@ -32,6 +32,10 @@ namespace CefSharp
             const CefString kJavascriptAsyncMethodCallRequest = "JavascriptAsyncMethodCallRequest";
             //Message from the browser process containing the result of a bound method invocation
             const CefString kJavascriptAsyncMethodCallResponse = "JavascriptAsyncMethodCallResponse";
+            const CefString kJavascriptAsyncPropertyGetRequest = "JavascriptAsyncPropertyGetRequest";
+            const CefString kJavascriptAsyncPropertyGetResponse = "JavascriptAsyncPropertyGetResponse";
+            const CefString kJavascriptAsyncPropertySetRequest = "JavascriptAsyncPropertySetRequest";
+            const CefString kJavascriptAsyncPropertySetResponse = "JavascriptAsyncPropertySetResponse";
             //Message that signals a new V8Context has been created
             const CefString kOnContextCreatedRequest = "OnContextCreated";
             //Message that signals a new V8Context has been released

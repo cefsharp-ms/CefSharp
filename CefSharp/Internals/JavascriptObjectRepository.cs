@@ -175,7 +175,7 @@ namespace CefSharp.Internals
             jsObject.Binder = options?.Binder;
             jsObject.MethodInterceptor = options?.MethodInterceptor;
 
-            AnalyseObjectForBinding(jsObject, analyseMethods: true, analyseProperties: !isAsync, readPropertyValue: false, camelCaseJavascriptNames: camelCaseJavascriptNames);
+            AnalyseObjectForBinding(jsObject, analyseMethods: true, analyseProperties: true, readPropertyValue: false, camelCaseJavascriptNames: camelCaseJavascriptNames);
         }
 
         public void UnRegisterAll()
@@ -334,7 +334,7 @@ namespace CefSharp.Internals
             return false;
         }
 
-        internal bool TryGetProperty(long objectId, string name, out object result, out string exception)
+        public bool TryGetProperty(long objectId, string name, out object result, out string exception)
         {
             exception = "";
             result = null;
@@ -364,7 +364,7 @@ namespace CefSharp.Internals
             return false;
         }
 
-        internal bool TrySetProperty(long objectId, string name, object value, out string exception)
+        public bool TrySetProperty(long objectId, string name, object value, out string exception)
         {
             exception = "";
             JavascriptObject obj;
@@ -476,6 +476,7 @@ namespace CefSharp.Internals
             jsMethod.ManagedName = methodInfo.Name;
             jsMethod.JavascriptName = GetJavascriptName(methodInfo.Name, camelCaseJavascriptNames);
             jsMethod.FireAndForget = methodInfo.GetCustomAttribute<JavascriptBindingAttribute>()?.FireAndForget == true;
+            jsMethod.Sync = methodInfo.GetCustomAttribute<JavascriptBindingAttribute>()?.Sync == true;
             jsMethod.Function = methodInfo.Invoke;
             jsMethod.ParameterCount = methodInfo.GetParameters().Length;
             jsMethod.Parameters = methodInfo.GetParameters()

@@ -168,7 +168,9 @@
     <ClInclude Include="Async\JavascriptAsyncMethodHandler.h" />
     <ClInclude Include="Async\JavascriptAsyncMethodWrapper.h" />
     <ClInclude Include="Async\JavascriptAsyncObjectWrapper.h" />
+    <ClInclude Include="Async\JavascriptAsyncPropertyWrapper.h" />
     <ClInclude Include="CefAppUnmanagedWrapper.h" />
+    <ClInclude Include="Async\JavascriptAsyncPropertyHandler.h" />
     <ClInclude Include="RegisterBoundObjectHandler.h" />
     <ClInclude Include="RegisterBoundObjectRegistry.h" />
     <ClInclude Include="resource.h" />
@@ -197,6 +199,8 @@
     <ClCompile Include="Async\JavascriptAsyncMethodHandler.cpp" />
     <ClCompile Include="Async\JavascriptAsyncMethodWrapper.cpp" />
     <ClCompile Include="Async\JavascriptAsyncObjectWrapper.cpp" />
+    <ClCompile Include="Async\JavascriptAsyncPropertyHandler.cpp" />
+    <ClCompile Include="Async\JavascriptAsyncPropertyWrapper.cpp" />
     <ClCompile Include="CefAppUnmanagedWrapper.cpp" />
     <ClCompile Include="WcfEnabledSubProcess.cpp" />
     <ClCompile Include="JavascriptCallbackRegistry.cpp" />

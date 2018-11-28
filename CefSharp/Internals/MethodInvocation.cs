@@ -22,6 +22,8 @@ namespace CefSharp.Internals
 
         public bool FireAndForget { get; set; }
 
+        public bool Sync { get; set; }
+
         public List<object> Parameters
         {
             get { return parameters; }

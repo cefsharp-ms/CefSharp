@@ -98,6 +98,12 @@
     <ClInclude Include="RegisterBoundObjectRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Async\JavascriptAsyncPropertyHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Async\JavascriptAsyncPropertyWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp">
@@ -155,6 +161,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WcfEnabledSubProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Async\JavascriptAsyncPropertyHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Async\JavascriptAsyncPropertyWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

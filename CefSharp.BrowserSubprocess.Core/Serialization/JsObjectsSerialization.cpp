@@ -40,6 +40,7 @@ namespace CefSharp
                     jsMethod->JavascriptName = StringUtils::ToClr(methodList->GetString(k++));
                     jsMethod->ParameterCount = methodList->GetInt(k++);
                     jsMethod->FireAndForget = methodList->GetBool(k++);
+                    jsMethod->Sync = methodList->GetBool(k++);
 
                     jsObject->Methods->Add(jsMethod);
                 }
