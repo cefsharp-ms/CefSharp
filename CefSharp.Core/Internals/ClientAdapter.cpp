@@ -1138,6 +1138,86 @@ namespace CefSharp
             }
         }
 
+        bool ClientAdapter::OnSyncProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
+            CefRefPtr<CefProcessMessage> message, CefRefPtr<CefMessageCallback> callback)
+        {
+            auto name = message->GetName();
+            auto argList = message->GetArgumentList();
+            IJavascriptCallbackFactory^ callbackFactory = _browserAdapter->JavascriptCallbackFactory;
+            if (name == kJavascriptAsyncMethodCallRequest && !_browserAdapter->IsDisposed)
+            {
+                auto frameId = GetInt64(argList, 0);
+                auto objectId = GetInt64(argList, 1);
+                auto callbackId = System::Threading::Interlocked::Increment(_syncCallbackId);
+                auto methodName = StringUtils::ToClr(argList->GetString(3));
+                auto arguments = argList->GetList(4);
+                auto methodInvocation = gcnew MethodInvocation(browser->GetIdentifier(), frameId, objectId, methodName, (callbackId > 0 ? Nullable<int64>(callbackId) : Nullable<int64>()));
+                methodInvocation->Sync = true;
+                for (auto i = 0; i < static_cast<int>(arguments->GetSize()); i++)
+                {
+                    methodInvocation->Parameters->Add(DeserializeObject(arguments, i, callbackFactory));
+                }
+
+                _syncMethodCallbacks.emplace(callbackId, callback);
+                _browserAdapter->MethodRunnerQueue->Enqueue(methodInvocation);
+
+                return true;
+            }
+            else if (name == kJavascriptAsyncPropertyGetRequest && !_browserAdapter->IsDisposed)
+            {
+                auto frameId = GetInt64(argList, 0);
+                auto objectId = GetInt64(argList, 1);
+                auto propName = StringUtils::ToClr(argList->GetString(2));
+
+                auto resMsg = CefProcessMessage::Create(kJavascriptAsyncPropertyGetResponse);
+                auto resArgList = resMsg->GetArgumentList();
+                auto repo = dynamic_cast<JavascriptObjectRepository^>(this->_browserAdapter->JavascriptObjectRepository);
+                Object^ result;
+                String^ exception;
+                if (repo->TryGetProperty(objectId, propName, result, exception))
+                {
+                    resArgList->SetBool(0, true);
+                    SerializeV8Object(resArgList, 1, result);
+                }
+                else
+                {
+                    resArgList->SetBool(0, false);
+                    resArgList->SetString(1, StringUtils::ToNative(exception));
+                }
+
+                callback->Continue(resMsg);
+
+                return true;
+            }
+            else if (name == kJavascriptAsyncPropertySetRequest && !_browserAdapter->IsDisposed)
+            {
+                auto frameId = GetInt64(argList, 0);
+                auto objectId = GetInt64(argList, 1);
+                auto propName = StringUtils::ToClr(argList->GetString(2));
+                auto val = DeserializeObject(argList, 3, callbackFactory);
+
+                auto resMsg = CefProcessMessage::Create(kJavascriptAsyncPropertySetResponse);
+                auto resArgList = resMsg->GetArgumentList();
+                auto repo = dynamic_cast<JavascriptObjectRepository^>(this->_browserAdapter->JavascriptObjectRepository);
+                String^ exception;
+                if (repo->TrySetProperty(objectId, propName, val, exception))
+                {
+                    resArgList->SetBool(0, true);
+                }
+                else
+                {
+                    resArgList->SetBool(0, false);
+                    resArgList->SetString(1, StringUtils::ToNative(exception));
+                }
+
+                callback->Continue(resMsg);
+
+                return true;
+            }
+
+            return false;
+        }
+
         bool ClientAdapter::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message)
         {
             auto handled = false;
@@ -1355,7 +1435,9 @@ namespace CefSharp
                 auto callbackId = GetInt64(argList, 2);
                 auto methodName = StringUtils::ToClr(argList->GetString(3));
                 auto arguments = argList->GetList(4);
+                auto fireAndForget = argList->GetBool(5);
                 auto methodInvocation = gcnew MethodInvocation(browser->GetIdentifier(), frameId, objectId, methodName, (callbackId > 0 ? Nullable<int64>(callbackId) : Nullable<int64>()));
+                methodInvocation->FireAndForget = fireAndForget;
                 for (auto i = 0; i < static_cast<int>(arguments->GetSize()); i++)
                 {
                     methodInvocation->Parameters->Add(DeserializeObject(arguments, i, callbackFactory));
@@ -1426,7 +1508,19 @@ namespace CefSharp
                 {
                     auto wrapper = static_cast<CefSharpBrowserWrapper^>(browser);
 
-                    wrapper->Browser->SendProcessMessage(CefProcessId::PID_RENDERER, message);
+                    if (result->Sync)
+                    {
+                        auto it = _syncMethodCallbacks.find(result->CallbackId.Value);
+                        if (it != _syncMethodCallbacks.end())
+                        {
+                            it->second->Continue(message);
+                            _syncMethodCallbacks.erase(result->CallbackId.Value);
+                        }
+                    }
+                    else
+                    {
+                        wrapper->Browser->SendProcessMessage(CefProcessId::PID_RENDERER, message);
+                    }
                 }
             }
         }

@@ -127,7 +127,8 @@ namespace CefSharp.Internals
                     FrameId = methodInvocation.FrameId,
                     Message = exception,
                     Result = result,
-                    Success = success
+                    Success = success,
+                    Sync = methodInvocation.Sync
                 };
             }
 

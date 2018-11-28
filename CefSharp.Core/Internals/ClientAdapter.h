@@ -15,6 +15,7 @@
 #include "include/internal/cef_types.h"
 
 using namespace System::Threading::Tasks;
+using namespace System::Collections::Concurrent;
 
 namespace CefSharp
 {
@@ -39,6 +40,9 @@ namespace CefSharp
             HWND _browserHwnd;
             CefRefPtr<CefBrowser> _cefBrowser;
 
+            std::map<int64, CefRefPtr<CefMessageCallback>> _syncMethodCallbacks;
+            int64 _syncCallbackId;
+
             gcroot<IBrowser^> _browser;
             gcroot<Dictionary<int, IBrowser^>^> _popupBrowsers;
             gcroot<String^> _tooltip;
@@ -60,14 +64,26 @@ namespace CefSharp
                 _popupBrowsers(gcnew Dictionary<int, IBrowser^>()),
                 _pendingTaskRepository(gcnew PendingTaskRepository<JavascriptResponse^>()),
                 _browserAdapter(browserAdapter),
-                _browserHwnd(NULL)
+                _browserHwnd(NULL),
+                _syncCallbackId(0)
             {
-
+               // _syncMethodCallbacks = gcnew ConcurrentDictionary<int64, MCefRefPtr<CefMessageCallback>^>();
             }
 
             ~ClientAdapter()
             {
                 CloseAllPopups(true);
+
+                /*for each(auto callback in static_cast<ConcurrentDictionary<int64, MCefRefPtr<CefMessageCallback>>^>(_syncMethodCallbacks)->Values)
+                {
+                    callback->Cancel();
+                }*/
+
+                for (const auto& sm_pair : _syncMethodCallbacks)
+                {
+                    sm_pair.second->Cancel();
+                }
+                _syncMethodCallbacks.clear();
 
                 //this will dispose the repository and cancel all pending tasks
                 delete _pendingTaskRepository;
@@ -101,6 +117,8 @@ namespace CefSharp
             virtual DECL CefRefPtr<CefDragHandler> GetDragHandler() OVERRIDE { return this; }
             virtual DECL CefRefPtr<CefFindHandler> GetFindHandler() OVERRIDE { return this; }
             virtual DECL bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) OVERRIDE;
+            virtual DECL bool OnSyncProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
+                CefRefPtr<CefProcessMessage> message, CefRefPtr<CefMessageCallback> callback) OVERRIDE;
 
 
             // CefLifeSpanHandler

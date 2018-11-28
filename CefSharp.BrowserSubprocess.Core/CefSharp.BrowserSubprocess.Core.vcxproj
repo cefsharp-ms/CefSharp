@@ -176,8 +176,10 @@
     <ClInclude Include="Async\JavascriptAsyncMethodHandler.h" />
     <ClInclude Include="Async\JavascriptAsyncMethodWrapper.h" />
     <ClInclude Include="Async\JavascriptAsyncObjectWrapper.h" />
+    <ClInclude Include="Async\JavascriptAsyncPropertyWrapper.h" />
     <ClInclude Include="CefAppUnmanagedWrapper.h" />
     <ClInclude Include="Wrapper\Frame.h" />
+    <ClInclude Include="Async\JavascriptAsyncPropertyHandler.h" />
     <ClInclude Include="Wrapper\Browser.h" />
     <ClInclude Include="Wrapper\V8Context.h" />
     <ClInclude Include="RegisterBoundObjectHandler.h" />
@@ -208,6 +210,8 @@
     <ClCompile Include="Async\JavascriptAsyncMethodHandler.cpp" />
     <ClCompile Include="Async\JavascriptAsyncMethodWrapper.cpp" />
     <ClCompile Include="Async\JavascriptAsyncObjectWrapper.cpp" />
+    <ClCompile Include="Async\JavascriptAsyncPropertyHandler.cpp" />
+    <ClCompile Include="Async\JavascriptAsyncPropertyWrapper.cpp" />
     <ClCompile Include="CefAppUnmanagedWrapper.cpp" />
     <ClCompile Include="Wrapper\Frame.cpp" />
     <ClCompile Include="Wrapper\Browser.cpp" />

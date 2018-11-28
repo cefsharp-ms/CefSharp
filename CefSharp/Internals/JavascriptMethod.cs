@@ -48,6 +48,8 @@ namespace CefSharp.Internals
 
         public bool FireAndForget { get; set; }
 
+        public bool Sync { get; set; }
+
         public override string ToString()
         {
             return ManagedName ?? base.ToString();

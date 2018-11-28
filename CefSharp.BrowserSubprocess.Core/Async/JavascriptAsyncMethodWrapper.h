@@ -16,16 +16,17 @@ namespace CefSharp
             private ref class JavascriptAsyncMethodWrapper
             {
             private:
+                initonly JavascriptMethod^ _method;
                 MCefRefPtr<JavascriptAsyncMethodHandler> _javascriptMethodHandler;
 
             public:
-                JavascriptAsyncMethodWrapper(int64 ownerId, JavascriptCallbackRegistry^ callbackRegistry, Func<JavascriptAsyncMethodCallback^, int64>^ methodCallbackSave)
-                    : _javascriptMethodHandler(new JavascriptAsyncMethodHandler(ownerId, callbackRegistry, methodCallbackSave))
+                JavascriptAsyncMethodWrapper(int64 ownerId, JavascriptMethod^ method, JavascriptCallbackRegistry^ callbackRegistry, Func<JavascriptAsyncMethodCallback^, int64>^ methodCallbackSave)
+                    : _javascriptMethodHandler(new JavascriptAsyncMethodHandler(ownerId, callbackRegistry, methodCallbackSave, method->FireAndForget, method->Sync)), _method(method)
                 {
 
                 }
 
-                void Bind(JavascriptMethod^ method, const CefRefPtr<CefV8Value>& value);
+                void Bind(const CefRefPtr<CefV8Value>& value);
             };
         }
     }

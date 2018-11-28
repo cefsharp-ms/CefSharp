@@ -101,7 +101,13 @@
     <ClInclude Include="Wrapper\Frame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Async\JavascriptAsyncPropertyHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Wrapper\Browser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Async\JavascriptAsyncPropertyWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Wrapper\V8Context.h">
@@ -169,7 +175,13 @@
     <ClCompile Include="Wrapper\Frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Async\JavascriptAsyncPropertyHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Wrapper\Browser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Async\JavascriptAsyncPropertyWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

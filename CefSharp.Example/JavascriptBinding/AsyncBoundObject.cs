@@ -20,6 +20,15 @@ namespace CefSharp.Example.JavascriptBinding
             throw new Exception("This is an exception coming from C#");
         }
 
+        private int myVar;
+
+        public int MyProperty
+        {
+            get { return myVar; }
+            set { myVar = value; }
+        }
+
+
         //We expect an exception here, so tell VS to ignore
         [DebuggerHidden]
         public int Div(int divident, int divisor)
@@ -31,6 +40,12 @@ namespace CefSharp.Example.JavascriptBinding
         public void HelloNoResult()
         {
 
+        }
+
+        [JavascriptBinding(Sync = true)]
+        public string HelloSync(string name)
+        {
+            return "Hello " + name;
         }
 
         public string Hello(string name)

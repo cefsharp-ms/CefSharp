@@ -33,7 +33,7 @@ namespace CefSharp
                         {
                             retval = CefV8Value::CreateUndefined();
                         }
-                        else
+                        else if(!_sync)
                         {
                             CefRefPtr<CefV8Value> promiseData;
                             CefRefPtr<CefV8Exception> promiseException;
@@ -83,16 +83,37 @@ namespace CefSharp
                         SetInt64(argList, 2, callbackId);
                         argList->SetString(3, name);
                         argList->SetList(4, params);
+                        argList->SetBool(5, this->_fireAndForget);
 
                         auto browser = context->GetBrowser();
-                        if (browser.get())
+                        if (this->_sync)
                         {
-                            browser->SendProcessMessage(CefProcessId::PID_BROWSER, request);
+                            if (browser.get())
+                            {
+                                auto result = browser->SendSyncProcessMessage(CefProcessId::PID_BROWSER, request);
+                                auto argList = result->GetArgumentList();
+                                auto success = argList->GetBool(2);
+                                if (success)
+                                {
+                                    retval = DeserializeV8Object(argList, 3);
+                                }
+                                else
+                                {
+                                    exception = argList->GetString(3);
+                                }
+                            }
                         }
                         else
                         {
-                            auto workerContext = context->GetWorkerContext();
-                            workerContext->Send(CefProcessId::PID_BROWSER, request);
+                            if (browser.get())
+                            {
+                                browser->SendProcessMessage(CefProcessId::PID_BROWSER, request);
+                            }
+                            else
+                            {
+                                auto workerContext = context->GetWorkerContext();
+                                workerContext->Send(CefProcessId::PID_BROWSER, request);
+                            }
                         }
                     }
                     finally
