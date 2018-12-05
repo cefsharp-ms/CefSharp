@@ -176,7 +176,7 @@ namespace CefSharp
 
             auto isPopup = browser->IsPopup() && !_browserControl->HasParent;
 
-            if (isPopup)
+            if (isPopup || _browserHwnd)
             {
                 // Add to the list of popup browsers.
                 _popupBrowsers->Add(browser->GetIdentifier(), browserWrapper);
