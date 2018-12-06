@@ -64,17 +64,16 @@ namespace CefSharp
 
         IBrowser^ ClientAdapter::GetBrowserWrapper(int browserId, bool isPopup)
         {
-            if (_browserControl->HasParent)
-            {
-                return _browser;
-            }
-
             if (isPopup)
             {
                 IBrowser^ popupBrowser;
                 if (_popupBrowsers->TryGetValue(browserId, popupBrowser))
                 {
                     return popupBrowser;
+                }
+                else if (_browserControl->HasParent)
+                {
+                    return _browser;
                 }
 
                 return nullptr;
@@ -170,9 +169,9 @@ namespace CefSharp
         {
             auto browserWrapper = gcnew CefSharpBrowserWrapper(browser);
 
-            auto isPopup = browser->IsPopup() && !_browserControl->HasParent;
+            auto isPopup = (browser->IsPopup() && !_browserControl->HasParent) || _browserHwnd;
 
-            if (isPopup || _browserHwnd)
+            if (isPopup)
             {
                 // Add to the list of popup browsers.
                 _popupBrowsers->Add(browser->GetIdentifier(), browserWrapper);
@@ -232,7 +231,7 @@ namespace CefSharp
                 handler->OnBeforeClose(_browserControl, %browserWrapper);
             }
 
-            if (isPopup)
+            if (isPopup || !browser->IsSame(_cefBrowser))
             {
                 // Remove from the browser popup list.
                 auto browserWrapper = GetBrowserWrapper(browser->GetIdentifier(), true);
@@ -302,7 +301,7 @@ namespace CefSharp
         {
             auto args = gcnew TitleChangedEventArgs(StringUtils::ToClr(title));
 
-            if (browser->IsPopup() && !_browserControl->HasParent)
+            if ((browser->IsPopup() && !_browserControl->HasParent) || !browser->IsSame(this->_cefBrowser))
             {
                 // Set the popup window title
                 auto hwnd = browser->GetHost()->GetWindowHandle();
